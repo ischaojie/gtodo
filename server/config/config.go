@@ -35,7 +35,6 @@ func (c *Config) initConfig() error {
 	// * 设置config文件类型
 	viper.SetConfigType("yaml")
 
-	// TODO 待理解
 	// * 读取环境变量
 	viper.AutomaticEnv()
 	// * 设置环境变量前缀

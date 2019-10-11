@@ -70,10 +70,10 @@ func CPUCheck(c *gin.Context) {
 	status := http.StatusOK
 	text := "OK"
 
-	if l5 >= float64(cores-1) {
+	if l5 >= float64(cores) {
 		status = http.StatusInternalServerError
 		text = "CRITICAL"
-	} else if l5 >= float64(cores-2) {
+	} else if l5 >= float64(cores) {
 		status = http.StatusTooManyRequests
 		text = "WARNING"
 	}

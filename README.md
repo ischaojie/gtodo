@@ -2,14 +2,12 @@
 > gin+gorm+vue
 
 just for fun,  for learn.
-
-[如何实现restful api服务]()
-
+![截图](todos.png)
 client 开发中......
 
 ## api
 ```shell script
-GET /token 申请token
+POST /token 申请token, 需携带key:matata
 ```
 ### todos
 ```
@@ -28,25 +26,28 @@ GET /sd/ram     ram usage
 GET /sd/disk    disk usage
 ```
 
-## how to run
-### server
+### how to run
+
+首先在mysql创建todo数据库`create database todo;`
+
+#### server
 ```shell script
 cd server
 go run main.go
 ```
-### client
+#### client
 ```shell script
 cd client
 npm install
 npm run serve
 ```
 
-## mini系列
+### mini系列
 [mini_search](https://github.com/shiniao/mini_search)——hakuna电影搜索引擎(elasticsearch+flask+vue)
 
 [mini_sms_classify](https://github.com/shiniao/mini_sms_classify)——小型垃圾邮件分类系统（naive_bayes+flask+vue）
 
 [mini_mnist](https://github.com/shiniao/mini_mnist)——mini手写数字识别(CNN+flask+vue)
 
-## 联系我
+### 联系我
 email: zhuzhezhe95@gmail.com

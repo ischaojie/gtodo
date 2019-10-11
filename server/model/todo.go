@@ -5,15 +5,14 @@ import "github.com/jinzhu/gorm"
 // * bind orm
 type TodoModel struct {
 	gorm.Model
-	Title     string `json:"title"`
+	Title     string `gorm:"not null" json:"title"`
 	Completed int    `json:"completed"`
 }
 
-// * 展示给用户的
-type TransformedTodo struct {
-	Id        uint   `json:"id"`
-	Title     string `json:"title"`
-	Completed int    `json:"completed"`
+
+type ListTodo struct {
+	Total    uint64       `json:"total"`
+	TodoList []*TodoModel `json:"todos"`
 }
 
 // * 设置表名
@@ -44,4 +43,18 @@ func Get(id uint) (TodoModel, error) {
 	return todo, DB.Self.First(&todo, id).Error
 }
 
+func GetAll() (uint64, []*TodoModel, error) {
 
+	todo := make([]*TodoModel, 0)
+	var t TodoModel
+	var count uint64
+
+	if err := DB.Self.Table(t.TableName()).Count(&count).Error; err != nil {
+		return count, todo, err
+	}
+	if err := DB.Self.Find(&todo).Error; err != nil {
+		return count, todo, err
+	}
+	return count, todo, nil
+
+}

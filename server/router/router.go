@@ -22,7 +22,7 @@ func Load(g *gin.Engine) *gin.Engine {
 	})
 
 	// * token下发
-	g.GET("/token", handler.Token)
+	g.POST("/token", handler.Token)
 
 	// * todos 路由组
 	v1 := g.Group("/v1/todos")
