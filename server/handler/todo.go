@@ -9,9 +9,19 @@ import (
 
 /*todos 路由相关处理函数*/
 
-// TODO get all todo api.
+// * get all todos api.
 func FetchAllTodo(c *gin.Context) {
-	SendResponse(c, nil, "building...")
+	
+	count, todo, err := model.GetAll();
+	if err != nil {
+		SendResponse(c, errno.ErrDatabase, nil)
+		return
+	}
+
+	SendResponse(c, nil, model.ListTodo{
+		Total:    count,
+		TodoList: todo,
+	})
 }
 
 func FetchSingleTodo(c *gin.Context) {
@@ -23,23 +33,19 @@ func FetchSingleTodo(c *gin.Context) {
 		SendResponse(c, errno.ErrDatabase, nil)
 		return
 	}
-
-	_todo := model.TransformedTodo{
-		Id:        todo.ID,
-		Title:     todo.Title,
-		Completed: todo.Completed,
-	}
-
-	SendResponse(c, nil, _todo)
+	SendResponse(c, nil, todo)
 }
 
+// TODO title为空时错误
 func AddTodo(c *gin.Context) {
-	completed, _ := strconv.Atoi(c.PostForm("completed"))
-
-	todo := model.TodoModel{
-		Title:     c.PostForm("title"),
-		Completed: completed,
-	}
+	//completed, _ := strconv.Atoi(c.PostForm("completed"))
+	//
+	//todo := model.TodoModel{
+	//	Title:     c.PostForm("title"),
+	//	Completed: completed,
+	//}
+	var todo model.TodoModel
+	c.Bind(&todo)
 	// * 创建一条记录，错误处理
 	if err := model.Create(&todo); err != nil {
 		SendResponse(c, errno.ErrDatabase, nil)
@@ -51,13 +57,9 @@ func AddTodo(c *gin.Context) {
 }
 
 func UpdateTodo(c *gin.Context) {
-	completed, _ := strconv.Atoi(c.PostForm("completed"))
 
-	todo := model.TodoModel{
-		Title:     c.PostForm("title"),
-		Completed: completed,
-	}
-
+	var todo model.TodoModel
+	c.Bind(&todo)
 	if err := model.Update(&todo); err != nil {
 		SendResponse(c, errno.ErrDatabase, nil)
 		return

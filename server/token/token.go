@@ -17,7 +17,7 @@ var ErrMissingHeader = errors.New("The length of the `Authorization` header is z
 
 
 // * 下发token
-func Sign(ctx *gin.Context, secret string) (tokenString string, err error) {
+func Sign(ctx *gin.Context, key, secret string) (tokenString string, err error) {
 
 	// * 读取config
 	if secret == "" {
@@ -26,7 +26,8 @@ func Sign(ctx *gin.Context, secret string) (tokenString string, err error) {
 	// * jwt claims
 	// TODO 过期时间处理
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"hakuna": "hakuna",
+		// * 用户申请token携带的key
+		"key": key,
 		// * 生效时间
 		"nbf":      time.Now().Unix(),
 		// * 签发时间
