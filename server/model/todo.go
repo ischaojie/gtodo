@@ -10,51 +10,43 @@ type TodoModel struct {
 }
 
 
-type ListTodo struct {
-	Total    uint64       `json:"total"`
-	TodoList []*TodoModel `json:"todos"`
-}
 
 // * 设置表名
-func (t *TodoModel) TableName() string {
+func (todo TodoModel) TableName() string {
 	return "todos"
 }
 
 // * 添加todo到数据库
-func Create(todo *TodoModel) error {
+func (todo TodoModel) Create() error {
 	return DB.Self.Create(&todo).Error
 }
 
 // * 删除某个todo
-func Delete(id uint) error {
-	todo := TodoModel{}
-	todo.ID = id
+func (todo TodoModel) Delete() error {
 	return DB.Self.Delete(&todo).Error
 }
 
 // * Update
-func Update(todo *TodoModel) error {
+func (todo TodoModel) Update() error {
 	return DB.Self.Save(&todo).Error
 }
 
 // * 获取某一条todo
-func Get(id uint) (TodoModel, error) {
-	var todo TodoModel
-	return todo, DB.Self.First(&todo, id).Error
+func (todo TodoModel) Get() (TodoModel, error) {
+	return todo, DB.Self.First(&todo, todo.ID).Error
 }
 
-func GetAll() (uint64, []*TodoModel, error) {
+func (todo TodoModel) GetAll() (uint64, []TodoModel, error) {
 
-	todo := make([]*TodoModel, 0)
-	var t TodoModel
+	var todos []TodoModel
 	var count uint64
 
-	if err := DB.Self.Table(t.TableName()).Count(&count).Error; err != nil {
-		return count, todo, err
+	if err := DB.Self.Table(todo.TableName()).Count(&count).Error; err != nil {
+		return count, todos, err
 	}
-	if err := DB.Self.Find(&todo).Error; err != nil {
-		return count, todo, err
+	if err := DB.Self.Find(&todos).Error; err != nil {
+		return count, todos, err
 	}
-	return count, todo, nil
+	return count, todos, nil
 
 }

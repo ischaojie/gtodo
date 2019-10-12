@@ -1,7 +1,6 @@
 <template>
-    <div class="todo">
-        <a-radio v-bind:class="{ 'completed': completed }">{{title}}
-        </a-radio>
+    <div class="todo" v-if="completed===0">
+        <a-radio @click="updateTodo"></a-radio>{{title}}
         <div style="flex: 1; text-align: right;">
             <a-icon type="delete" theme="twoTone" @click="deleteTodo"/>
         </div>
@@ -19,7 +18,6 @@
             deleteTodo() {
                 axios.delete('/api/v1/todos/' + this.id)
                     .then((res) => {
-                        console.info(res);
                         this.reload();
                         this.$notify({
                             group: 'foo',
@@ -31,12 +29,11 @@
                 });
             },
             updateTodo() {
-                axios.put('/api/v1/todos/' + this.id, {
-                    title: this.title,
-                    completed: this.completed
-                })
+                let data = new FormData();
+                data.append('title', this.title);
+                data.append('completed', 1);
+                axios.put('/api/v1/todos/' + this.id, data)
                     .then((res) => {
-                        console.info(res);
                         this.reload();
                         this.$notify({
                             group: 'foo',

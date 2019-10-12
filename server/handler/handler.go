@@ -3,7 +3,6 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"log"
 	"mini_todo/errno"
 	"mini_todo/token"
 	"net/http"
@@ -36,7 +35,6 @@ func Token(c *gin.Context) {
 	var key Key
 
 	c.BindJSON(&key)
-	log.Print(key)
 	//key := c.PostForm("key")
 	// * 判断key是否正确
 	if key.Key != viper.GetString("key") {

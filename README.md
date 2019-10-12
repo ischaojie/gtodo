@@ -1,15 +1,15 @@
-# 基于 go 语言的 restful api 实践
+# A todos restful-api service base on go language.
 > gin+gorm+vue
 
 just for fun,  for learn.
 
-![截图](todos.png)
+![截图](todogif.gif)
 
 ## api
 ```shell script
 POST /token 申请token, 需携带key:matata
 ```
-### todos
+### todos api
 ```
 # 访问todos api 需携带token
 GET    /v1/todos 
@@ -18,7 +18,7 @@ POST   /v1/todos
 PUT    /v1/todos/:id
 DELETE /v1/todos/:id
 ```
-### health: api状态检测
+### health api: api状态检测
 ```shell script
 GET /sd/health  api status
 GET /sd/cpu     cpu status
@@ -27,16 +27,19 @@ GET /sd/disk    disk usage
 ```
 
 ### how to run
-
-首先在mysql创建todo数据库`create database todo;`
-
-#### server
-```shell script
-cd server
-go run main.go
 ```
-#### client
-```shell script
+> git clone https://github.com/shiniao/mini_todo.git
+
+# mysql创建数据库
+> create database todo;
+
+# 根据需要修改config.yaml文件内容
+
+# server
+> cd server
+> go run main.go
+
+# client
 cd client
 npm install
 npm run serve

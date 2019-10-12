@@ -1,15 +1,21 @@
 <template>
     <div class="home">
-        <img alt="Vue logo" src="../assets/todo.png">
+        <div class="todo-image">
+            <img alt="Vue logo" src="../assets/todo.png">
+            <h3>今日土豆</h3>
+            <p>明日复明日，明日何其多。——《明日歌》</p>
+        </div>
         <a-row>
-            <a-col :span="8"></a-col>
-            <a-col :span="8">
+            <a-col :xs="1" :sm="3" :md="6" :lg="7" :xl="8"></a-col>
+            <a-col :xs="22" :sm="18" :md="12" :lg="10" :xl="8">
+
+
                 <a-input placeholder="添加一条todo" v-model="title" @pressEnter="addTodo"/>
                 <div v-for="todo in todos">
                     <todo :title="todo.title" :id="todo.ID" :completed="todo.completed"></todo>
                 </div>
             </a-col>
-            <a-col :span="8"></a-col>
+            <a-col :xs="1" :sm="3" :md="6" :lg="7" :xl="8"></a-col>
         </a-row>
 
 
@@ -32,7 +38,7 @@
             return {
                 title: "",
                 total: 0,
-                todos: ""
+                todos: "",
             }
         },
         inject: ['reload'],
@@ -50,11 +56,9 @@
             getTodo() {
             },
             addTodo() {
-                console.info(this.title)
-                axios.post('/api/v1/todos/', {
-                    title: this.title,
-                    completed: 0
-                })
+                let data = new FormData();
+                data.append('title', this.title);
+                axios.post('/api/v1/todos/', data)
                     .then((res) => {
                         console.info(res);
                         this.reload();
@@ -73,6 +77,12 @@
         },
         mounted() {
             this.getAllTodo()
-        }
+        },
+
     }
 </script>
+
+<style lang="less" scoped>
+
+
+</style>

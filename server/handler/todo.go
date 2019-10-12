@@ -7,20 +7,28 @@ import (
 	"strconv"
 )
 
+type ListTodo struct {
+	Total    uint64            `json:"total"`
+	TodoList []model.TodoModel `json:"todos"`
+}
+
+type createTodo struct {
+}
+
 /*todos 路由相关处理函数*/
 
 // * get all todos api.
 func FetchAllTodo(c *gin.Context) {
-	
-	count, todo, err := model.GetAll();
+	var todo model.TodoModel
+	count, todos, err := todo.GetAll()
 	if err != nil {
 		SendResponse(c, errno.ErrDatabase, nil)
 		return
 	}
 
-	SendResponse(c, nil, model.ListTodo{
+	SendResponse(c, nil, ListTodo{
 		Total:    count,
-		TodoList: todo,
+		TodoList: todos,
 	})
 }
 
@@ -29,7 +37,9 @@ func FetchSingleTodo(c *gin.Context) {
 	var err error
 
 	id, _ := strconv.Atoi(c.Param("id"))
-	if todo, err = model.Get(uint(id)); err != nil {
+	todo.ID = uint(id)
+
+	if todo, err = todo.Get(); err != nil {
 		SendResponse(c, errno.ErrDatabase, nil)
 		return
 	}
@@ -38,16 +48,15 @@ func FetchSingleTodo(c *gin.Context) {
 
 // TODO title为空时错误
 func AddTodo(c *gin.Context) {
-	//completed, _ := strconv.Atoi(c.PostForm("completed"))
-	//
-	//todo := model.TodoModel{
-	//	Title:     c.PostForm("title"),
-	//	Completed: completed,
-	//}
-	var todo model.TodoModel
-	c.Bind(&todo)
+	completed, _ := strconv.Atoi(c.PostForm("completed"))
+
+	todo := model.TodoModel{
+		Title:     c.PostForm("title"),
+		Completed: completed,
+	}
+
 	// * 创建一条记录，错误处理
-	if err := model.Create(&todo); err != nil {
+	if err := todo.Create(); err != nil {
 		SendResponse(c, errno.ErrDatabase, nil)
 		return
 	}
@@ -57,10 +66,14 @@ func AddTodo(c *gin.Context) {
 }
 
 func UpdateTodo(c *gin.Context) {
-
-	var todo model.TodoModel
-	c.Bind(&todo)
-	if err := model.Update(&todo); err != nil {
+	id, _ := strconv.Atoi(c.Param("id"))
+	completed, _ := strconv.Atoi(c.PostForm("completed"))
+	todo := model.TodoModel{
+		Title:     c.PostForm("title"),
+		Completed: completed,
+	}
+	todo.ID = uint(id)
+	if err := todo.Update(); err != nil {
 		SendResponse(c, errno.ErrDatabase, nil)
 		return
 	}
@@ -71,7 +84,11 @@ func UpdateTodo(c *gin.Context) {
 
 func DeleteTodo(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
-	if err := model.Delete(uint(id)); err != nil {
+	todo := model.TodoModel{}
+
+	todo.ID = uint(id)
+
+	if err := todo.Delete(); err != nil {
 		SendResponse(c, errno.ErrDatabase, nil)
 		return
 	}

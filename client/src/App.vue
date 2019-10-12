@@ -5,7 +5,6 @@
                        classes="noti"
                        :max="3"
                        :width="400"/>
-
         <div id="nav">
             <router-link to="/">Home</router-link>
             |
@@ -13,6 +12,7 @@
             |
             <router-link to="/about">About</router-link>
         </div>
+
         <router-view v-if="isRouterAlive"/>
     </div>
 </template>
@@ -34,7 +34,7 @@
             color: #2c3e50;
 
             &.router-link-exact-active {
-                color: #42b983;
+                /*color: #42b983;*/
             }
         }
     }
@@ -71,7 +71,7 @@
         },
         data() {
             return {
-                isRouterAlive: true
+                isRouterAlive: true,
             }
         },
         methods: {
@@ -80,7 +80,7 @@
                 this.$nextTick(function () {
                     this.isRouterAlive = true
                 })
-            }
+            },
         }
     }
 </script>
