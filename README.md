@@ -6,6 +6,9 @@ just for fun,  for learn.
 ![截图](todogif.gif)
 
 ## api
+
+访问`[host:port]/swagger/index.html`查看api详情
+
 ```shell script
 POST /token 申请token, 需携带key:matata
 ```

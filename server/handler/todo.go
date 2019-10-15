@@ -18,6 +18,13 @@ type createTodo struct {
 /*todos 路由相关处理函数*/
 
 // * get all todos api.
+// @Summary Get all todos
+// @Description Get all todos from database
+// @Tags todo
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} model.TodoModel "{"code":0,"message":"OK","data":{"total":233, "todos":[{"ID":91,"title": "烫头", "completed": 1,"CreatedAt": "2019-10-12T10:10:05+08:00","UpdatedAt": "2019-10-12T10:16:24+08:00","DeletedAt": null}]}}"
+// @Router /v1/todos [get]
 func FetchAllTodo(c *gin.Context) {
 	var todo model.TodoModel
 	count, todos, err := todo.GetAll()
@@ -32,6 +39,13 @@ func FetchAllTodo(c *gin.Context) {
 	})
 }
 
+// @Summary Get a todo
+// @Description Get a todo
+// @Tags todo
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} model.TodoModel "{"code":0,"message":"OK","data":{"ID":91,"title": "烫头", "completed": 1,"CreatedAt": "2019-10-12T10:10:05+08:00","UpdatedAt": "2019-10-12T10:16:24+08:00","DeletedAt": null}}"
+// @Router /v1/todos/{id} [get]
 func FetchSingleTodo(c *gin.Context) {
 	var todo model.TodoModel
 	var err error
@@ -47,6 +61,14 @@ func FetchSingleTodo(c *gin.Context) {
 }
 
 // TODO title为空时错误
+// @Summary Add new todos to the database
+// @Description Add a new todo
+// @Tags todo
+// @Accept  json
+// @Produce  json
+// @Param todo body model.TodoModel true "The todo info"
+// @Success 200 {object} handler.Response "{"code":0,"message":"OK","data":"create successful."}"
+// @Router /v1/todos/ [post]
 func AddTodo(c *gin.Context) {
 	completed, _ := strconv.Atoi(c.PostForm("completed"))
 
@@ -65,6 +87,15 @@ func AddTodo(c *gin.Context) {
 	SendResponse(c, nil, "create successful.")
 }
 
+// @Summary Update a todo
+// @Description Update a todo
+// @Tags todo
+// @Accept  json
+// @Produce  json
+// @Param id path uint64 true "The todo's database id index num"
+// @Param todo body model.TodoModel true "The todo info"
+// @Success 200 {object} handler.Response "{"code":0,"message":"OK","data":"update successful."}"
+// @Router /v1/todos/{id} [put]
 func UpdateTodo(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	completed, _ := strconv.Atoi(c.PostForm("completed"))
@@ -82,6 +113,13 @@ func UpdateTodo(c *gin.Context) {
 	SendResponse(c, nil, "update successful.")
 }
 
+// @Summary Delete a todo
+// @Description Delete a todo
+// @Tags todo
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} handler.Response "{"code":0,"message":"OK","data":"delete successful."}"
+// @Router /v1/todos/{id} [delete]
 func DeleteTodo(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	todo := model.TodoModel{}

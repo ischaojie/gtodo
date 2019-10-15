@@ -2,6 +2,10 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
+
+	_ "mini_todo/docs"
 	"mini_todo/handler"
 	"mini_todo/middleware"
 	"net/http"
@@ -20,6 +24,9 @@ func Load(g *gin.Engine) *gin.Engine {
 	g.NoRoute(func(c *gin.Context) {
 		c.String(http.StatusNotFound, "The incorrect API route.")
 	})
+
+	// swagger api docs
+	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// * token下发
 	g.POST("/token", handler.Token)

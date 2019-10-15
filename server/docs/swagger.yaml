@@ -1,0 +1,201 @@
+basePath: /v1
+definitions:
+  handler.Response:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      message:
+        type: string
+    type: object
+  handler.message:
+    properties:
+      info:
+        type: string
+      status:
+        type: string
+    type: object
+  model.TodoModel:
+    properties:
+      completed:
+        type: integer
+      title:
+        type: string
+    type: object
+host: todo.shiniao.fun
+info:
+  contact:
+    email: zhuzhezhe5@gmail.com
+    name: shiniao
+    url: http://me.shiniao.fun/
+  description: This is a todos application server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://me.shiniao.fun/
+  title: A todos application API
+  version: "1.0"
+paths:
+  /sd/cpu:
+    get:
+      consumes:
+      - application/json
+      description: Checks the cpu usage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"status":"OK", "info":"Load average: 1.82, 1.05, 0.85 | Cores:
+            2"}'
+          schema:
+            $ref: '#/definitions/handler.message'
+      summary: Checks the cpu usage
+      tags:
+      - sd
+  /sd/disk:
+    get:
+      consumes:
+      - application/json
+      description: Checks the disk usage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"status":"OK", "info":"Free space: 44429MB (43GB) / 119674MB
+            (116GB) | Used: 39%"}'
+          schema:
+            $ref: '#/definitions/handler.message'
+      summary: Checks the disk usage
+      tags:
+      - sd
+  /sd/health:
+    get:
+      consumes:
+      - application/json
+      description: Shows OK as the ping-pong result
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"status":"OK", "info":""}'
+          schema:
+            $ref: '#/definitions/handler.message'
+      summary: Shows OK as the ping-pong result
+      tags:
+      - sd
+  /sd/ram:
+    get:
+      consumes:
+      - application/json
+      description: Checks the ram usage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"status":"OK", "info":"Free space: 5293MB (5GB) / 7665MB
+            (7GB) | Used: 69%"}'
+          schema:
+            $ref: '#/definitions/handler.message'
+      summary: Checks the ram usage
+      tags:
+      - sd
+  /v1/todos:
+    get:
+      consumes:
+      - application/json
+      description: Get all todos from database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":{"total":233, "todos":[{"ID":91,"title":
+            "烫头", "completed": 1,"CreatedAt": "2019-10-12T10:10:05+08:00","UpdatedAt":
+            "2019-10-12T10:16:24+08:00","DeletedAt": null}]}}'
+          schema:
+            $ref: '#/definitions/model.TodoModel'
+      summary: Get all todos
+      tags:
+      - todo
+  /v1/todos/:
+    post:
+      consumes:
+      - application/json
+      description: Add a new todo
+      parameters:
+      - description: The todo info
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/model.TodoModel'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":"create successful."}'
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: Add new todos to the database
+      tags:
+      - todo
+  /v1/todos/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a todo
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":"delete successful."}'
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: Delete a todo
+      tags:
+      - todo
+    get:
+      consumes:
+      - application/json
+      description: Get a todo
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":{"ID":91,"title": "烫头", "completed":
+            1,"CreatedAt": "2019-10-12T10:10:05+08:00","UpdatedAt": "2019-10-12T10:16:24+08:00","DeletedAt":
+            null}}'
+          schema:
+            $ref: '#/definitions/model.TodoModel'
+      summary: Get a todo
+      tags:
+      - todo
+    put:
+      consumes:
+      - application/json
+      description: Update a todo
+      parameters:
+      - description: The todo's database id index num
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: The todo info
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/model.TodoModel'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":"update successful."}'
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: Update a todo
+      tags:
+      - todo
+swagger: "2.0"

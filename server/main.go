@@ -17,6 +17,20 @@ import (
 // * 读取命令行配置（config文件）
 var cfg = pflag.StringP("config", "c", "", "apiserver config file path.")
 
+// @title A todos application API
+// @version 1.0
+// @description This is a todos application server.
+// @termsOfService http://me.shiniao.fun/
+
+// @contact.name shiniao
+// @contact.url http://me.shiniao.fun/
+// @contact.email zhuzhezhe5@gmail.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host todo.shiniao.fun
+// @BasePath /v1
 func main() {
 
 	// * 初始化配置
@@ -39,7 +53,6 @@ func main() {
 	g := gin.New()
 	router.Load(g)
 	log.Printf("The gin engine started, and the router loaded.")
-
 
 	go func() {
 		if err := pingServer(); err != nil {
