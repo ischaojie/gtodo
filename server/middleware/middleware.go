@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"mini_todo/errno"
-	"mini_todo/handler"
-	"mini_todo/token"
+	"github.com/shiniao/gtodo/errno"
+	"github.com/shiniao/gtodo/handler"
+	"github.com/shiniao/gtodo/token"
 	"net/http"
 	"time"
 )

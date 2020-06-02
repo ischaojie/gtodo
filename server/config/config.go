@@ -13,7 +13,10 @@ type Config struct {
 
 // * 初始化配置文件
 func Init(cfg string) error {
-	c := Config{Name:cfg}
+	c := Config{
+		Name: cfg,
+	}
+	// 初始化配置文件
 	if err := c.initConfig(); err != nil {
 		return err
 	}
@@ -27,7 +30,7 @@ func (c *Config) initConfig() error {
 	if c.Name != "" {
 		// * 设置配置文件名
 		viper.SetConfigFile(c.Name)
-	}else {
+	} else {
 		// * 未指定配置文件，读取默认路径
 		viper.AddConfigPath(".")
 		viper.SetConfigName("config")
@@ -43,18 +46,16 @@ func (c *Config) initConfig() error {
 	viper.SetEnvKeyReplacer(replacer)
 
 	// * 读取配置文件内容，使用viper.get获取配置
-	if err:=viper.ReadInConfig(); err != nil {
+	if err := viper.ReadInConfig(); err != nil {
 		return err
 	}
 	return nil
 }
 
 // * 监控配置文件变化并热加载
-func (c *Config) WatchConfig()  {
+func (c *Config) WatchConfig() {
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
 		log.Printf("Config file changed: %s", e.Name)
 	})
 }
-
-

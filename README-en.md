@@ -1,10 +1,10 @@
-# gtodo
-> gtodo 是 go 语言实现的一个 todo 应用的 restful api 服务，使用 Gin+Vue。
+# todos-go 
+A todos restful-api service base on go language, use gin+gorm+vue.
 
-gtodo 建立的目的是为了学习 go web 开发，使用了前后端分离的方式，使用 JWT 进行身份鉴权，
-前端使用 Vue+Antd，后端使用 Gin，数据库ORM 使用 Gorm。
+This todos servie is for learning go web development, Use a front-end and back-end separation approach.
+front-end use Vue and back-end use Gin. just for fun,  for learn.
 
-## 展示
+## show
 ![screentshot](todogif.gif)
 
 ## how to run

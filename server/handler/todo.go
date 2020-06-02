@@ -2,8 +2,8 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"mini_todo/errno"
-	"mini_todo/model"
+	"github.com/shiniao/gtodo/errno"
+	"github.com/shiniao/gtodo/model"
 	"strconv"
 )
 

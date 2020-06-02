@@ -6,39 +6,81 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/spf13/viper"
 	"log"
+	"time"
 )
 
 type Database struct {
-	Self *gorm.DB
+	Default *gorm.DB
 }
 
+// 定义全局数据库
+var DB *Database
 
+// Init 初始化数据库
 func (db *Database) Init() {
+	DB = &Database{
+		Default: getDefaultDB(),
+	}
+}
 
-	// * 初始化数据库
-	config := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=%t&loc=%s",
-		viper.GetString("db.username"),
+// Close 关闭数据库
+func (db *Database) Close() {
+	err := DB.Default.Close()
+	if err != nil {
+		log.Printf("[model] close default db err: %+v", err)
+	}
+}
+
+// getDB 返回默认的数据库实例
+func getDB() *gorm.DB {
+	return DB.Default
+}
+
+// getDefaultDB 获取默认数据库配置
+func getDefaultDB() *gorm.DB {
+	return initDefaultDB()
+}
+
+// initDefaultDB 初始化默认数据库
+func initDefaultDB() *gorm.DB {
+	return openDB(viper.GetString("db.username"),
 		viper.GetString("db.password"),
 		viper.GetString("db.addr"),
-		viper.GetString("db.dbname"),
+		viper.GetString("db.name"))
+}
+
+// openDB 生成数据库实例
+func openDB(username, password, addr, name string) *gorm.DB {
+	config := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=%t&loc=%s",
+		username,
+		password,
+		addr,
+		name,
 		true,
-		//"Asia/Shanghai"),
+		// "Asia/Shanghai"),
 		"Local")
+
 	// * 以config打开mysql数据库
-	_db, err := gorm.Open("mysql", config)
-	DB = &Database{Self: _db}
+	db, err := gorm.Open("mysql", config)
 	if err != nil {
-		log.Printf("Database connection failed. Database name: %s", viper.GetString("db.dbname"))
+		log.Printf("Database connection failed. Database name: %s", name)
 	}
 	// * 解决中文字符问题：Error 1366
-	_db = _db.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8 auto_increment=1")
-	_db.AutoMigrate(&TodoModel{})
+	db.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8 auto_increment=1")
+
+	// 配置数据库
+	setupDB(db)
+
+	return db
 
 }
 
-func (db *Database) Close()  {
-	// * 关闭数据库
-	db.Self.Close().Error()
+// setupDB 配置数据库
+func setupDB(db *gorm.DB) {
+	db.LogMode(viper.GetBool("gorm.show_log"))
+	// 用于设置最大打开的连接数，默认值为0表示不限制.设置最大的连接数，可以避免并发太高导致连接mysql出现too many connections的错误。
+	db.DB().SetMaxOpenConns(viper.GetInt("gorm.max_open_conn"))
+	// 用于设置闲置的连接数.设置闲置的连接数则当开启的一个连接使用完成后可以放在池里等候下一次使用。
+	db.DB().SetMaxIdleConns(viper.GetInt("grom.max_idle_conn"))
+	db.DB().SetConnMaxLifetime(time.Minute * viper.GetDuration("grom.conn_max_lift_time"))
 }
-
-var DB *Database

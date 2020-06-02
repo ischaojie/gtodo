@@ -5,9 +5,9 @@ import (
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 
-	_ "mini_todo/docs"
-	"mini_todo/handler"
-	"mini_todo/middleware"
+	_ "github.com/shiniao/gtodo/docs"
+	"github.com/shiniao/gtodo/handler"
+	"github.com/shiniao/gtodo/middleware"
 	"net/http"
 )
 

@@ -1,18 +1,26 @@
-module mini_todo
+module github.com/shiniao/gtodo
 
 go 1.13
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
-	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
+	github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/fsnotify/fsnotify v1.4.7
-	github.com/gin-gonic/gin v1.4.0
+	github.com/gin-gonic/gin v1.6.3
 	github.com/go-ole/go-ole v1.2.4 // indirect
-	github.com/jinzhu/gorm v1.9.11
-	github.com/shirou/gopsutil v2.19.9+incompatible
-	github.com/spf13/pflag v1.0.5
-	github.com/spf13/viper v1.4.0
+	github.com/go-playground/validator/v10 v10.2.0
+	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
+	github.com/jinzhu/gorm v1.9.12
+	github.com/lestrrat-go/file-rotatelogs v2.3.0+incompatible
+	github.com/lestrrat-go/strftime v1.0.1 // indirect
+	github.com/shirou/gopsutil v2.20.5+incompatible
+	github.com/spf13/pflag v1.0.3
+	github.com/spf13/viper v1.7.0
 	github.com/swaggo/gin-swagger v1.2.0
-	github.com/swaggo/swag v1.6.3
+	github.com/swaggo/swag v1.5.1
+	github.com/tebeka/strftime v0.1.4 // indirect
+	go.uber.org/zap v1.10.0
+	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 )
