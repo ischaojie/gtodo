@@ -2,8 +2,8 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/shiniao/gtodo/errno"
-	"github.com/shiniao/gtodo/model"
+	"github.com/shiniao/gtodo/internal/model"
+	"github.com/shiniao/gtodo/pkg/errno"
 	"strconv"
 )
 
@@ -15,7 +15,6 @@ type ListTodo struct {
 type createTodo struct {
 }
 
-/*todos 路由相关处理函数*/
 
 // * get all todos api.
 // @Summary Get all todos

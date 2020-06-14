@@ -1,21 +1,39 @@
+/*
+* ________ _________  ________  ________  ________
+*|\   ____\\___   ___\\   __  \|\   ___ \|\   __  \
+*\ \  \___\|___ \  \_\ \  \|\  \ \  \_|\ \ \  \|\  \
+* \ \  \  ___  \ \  \ \ \  \\\  \ \  \ \\ \ \  \\\  \
+*  \ \  \|\  \  \ \  \ \ \  \\\  \ \  \_\\ \ \  \\\  \
+*   \ \_______\  \ \__\ \ \_______\ \_______\ \_______\
+*    \|_______|   \|__|  \|_______|\|_______|\|_______|
+*
+ */
+
 package main
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/shiniao/gtodo/config"
-	"github.com/shiniao/gtodo/model"
+	"github.com/shiniao/gtodo/internal/model"
+	"github.com/shiniao/gtodo/pkg/log"
+	v "github.com/shiniao/gtodo/pkg/version"
 	"github.com/shiniao/gtodo/router"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
 // * 读取命令行配置（config文件）
-var cfg = pflag.StringP("config", "c", "", "apiserver config file path.")
+var (
+	cfg     = pflag.StringP("config", "c", "", "apiserver config file path.")
+	version = pflag.BoolP("version", "v", false, "show version info.")
+)
 
 // @title A todos application API
 // @version 1.0
@@ -35,33 +53,45 @@ func main() {
 
 	// * 初始化配置
 	pflag.Parse()
+	// version
+	if *version{
+		v := v.Get()
+		marshaled, err := json.MarshalIndent(&v, "", " ")
+		if err != nil{
+			fmt.Printf("%v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println(marshaled)
+		return
+	}
+
 	if err := config.Init(*cfg); err != nil {
 		panic(err)
 	}
-	log.Printf("The config inited.")
+	log.Info("The config inited.")
 
 	// * 初始化数据库
 	model.DB.Init()
 	defer model.DB.Close()
-	log.Printf("The database inited.")
+	log.Info("The database inited.")
 
 	// * 设置 run mode
-	gin.SetMode(viper.GetString("runmode"))
-	log.Printf("Gin run mode set to: %s", viper.GetString("runmode"))
+	gin.SetMode(viper.GetString("run_mode"))
+	log.Info("Gin run mode set to: %s", viper.GetString("run_mode"))
 
 	// * gin engine.
 	g := gin.New()
 	router.Load(g)
-	log.Printf("The gin engine started, and the router loaded.")
+	log.Info("The gin engine started, and the router loaded.")
 
 	go func() {
 		if err := pingServer(); err != nil {
 			log.Fatal("The router has no response, or it might took too long to start up.", err)
 		}
-		log.Println("The router has been deployed successfully.")
+		log.Info("The router has been deployed successfully.")
 	}()
 
-	log.Printf("Start to listening on: %s", viper.GetString("addr"))
+	log.Info("Start to listening on: %s", viper.GetString("addr"))
 	g.Run(viper.GetString("addr")).Error()
 }
 
@@ -73,7 +103,7 @@ func pingServer() error {
 			return nil
 		}
 
-		log.Print("Waiting for the router, retry in 1 second.")
+		log.Info("Waiting for the router, retry in 1 second.")
 		time.Sleep(time.Second)
 	}
 	return errors.New("Cannot connect to the router.")

@@ -1,14 +1,18 @@
 package model
 
-import (
-	"github.com/jinzhu/gorm"
-)
+import "time"
 
-// * bind orm
+// TodoModel 代表todo模型
 type TodoModel struct {
-	gorm.Model
-	Title     string `gorm:"not null" json:"title"`
-	Completed int    `json:"completed"`
+	ID uint64 `gorm:"primary_key;AUTO_INCREMENT;column:id" json:"-"`
+	UserID uint64 `gorm:"column:user_id" json:"user_id"`
+	Title     string `gorm:"column:title" json:"title"`
+	Completed int    `gorm:"column:completed" json:"completed"`
+	CompletedAt time.Time `gorm:"column:completed_at" json:"completed_at"`
+	Description string `gorm:"column:description" json:"description"`
+	RepeatType string `gorm:"column:repeat_type" json:"repeat_type"`
+	CreatedAt time.Time `gorm:"column:created_at" json:"-"`
+	UpdatedAt time.Time `gorm:"column:updated_at" json:"-"`
 }
 
 

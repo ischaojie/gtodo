@@ -7,44 +7,46 @@ import (
 
 	_ "github.com/shiniao/gtodo/docs"
 	"github.com/shiniao/gtodo/handler"
-	"github.com/shiniao/gtodo/middleware"
-	"net/http"
+	"github.com/shiniao/gtodo/router/middleware"
 )
 
 func Load(g *gin.Engine) *gin.Engine {
 
-	// * 全局middlewares
-
+	// * 全局 middleware
 	g.Use(gin.Recovery())
 	g.Use(middleware.NoCache)
 	g.Use(middleware.Options)
 	g.Use(middleware.Secure)
 
 	// * 404 handler
-	g.NoRoute(func(c *gin.Context) {
-		c.String(http.StatusNotFound, "The incorrect API route.")
-	})
+	g.NoRoute(handler.RouteNotFound)
+	g.NoMethod(handler.RouteNotFound)
 
 	// swagger api docs
 	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// * token下发
-	g.POST("/token", handler.Token)
+	// 认证相关路由
+	g.POST("/v1/register", handler.Register)
+	g.POST("/v1/login", handler.Login)
+	g.POST("/v1/login/phone", handler.PhoneLogin)
+	g.GET("/v1/vcode", handler.VCode)
 
-	// * todos 路由组
-	v1 := g.Group("/v1/todos")
-	v1.Use(middleware.AuthMiddleware())
+	// 账户相关
+	g.GET("/v1/account", handler.Account)
+
+	// todos 路由组
+	todo := g.Group("/v1/todos")
+	todo.Use(middleware.AuthMiddleware())
 	{
-		v1.GET("/", handler.FetchAllTodo)
-		v1.GET("/:id", handler.FetchSingleTodo)
-		v1.POST("/", handler.AddTodo)
-		v1.PUT("/:id", handler.UpdateTodo)
-		v1.DELETE("/:id", handler.DeleteTodo)
+		todo.GET("/", handler.FetchAllTodo)
+		todo.GET("/:id", handler.FetchSingleTodo)
+		todo.POST("/", handler.AddTodo)
+		todo.PUT("/:id", handler.UpdateTodo)
+		todo.DELETE("/:id", handler.DeleteTodo)
 	}
 
-	// * api server 健康状况
+	// api server 健康状况
 	svcd := g.Group("/sd")
-
 	{
 		svcd.GET("/health", handler.HealthCheck)
 		svcd.GET("/disk", handler.DiskCheck)

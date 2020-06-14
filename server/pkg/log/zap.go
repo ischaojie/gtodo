@@ -2,31 +2,57 @@ package log
 
 import (
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"github.com/shiniao/gtodo/pkg/util"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
 	"io"
 	"os"
 	"strings"
 	"time"
 )
 
-// zapLogger logger struct
+const (
+	WriterStdout = "stdout" // 标准输出
+	WriterFile   = "file"   // 文件输出
+)
+
+const (
+	RotateTimeDaily  = "daily" // 日志按天切割
+	RotateTimeHourly = "houly" // 日志按小时切割
+)
+
+// zapLogger 对sugaredLogger的封装
 type zapLogger struct {
 	sugaredLogger *zap.SugaredLogger
 }
 
-// NewZapLogger returns
+// NewZapLogger returns a new zap Logger
 func NewZapLogger(cfg *Config) (Logger, error) {
 	var cores []zapcore.Core
+	var options []zap.Option
 	encoder := getJSONEncoder()
+
+	// 设置初始化字段: ip/app
+	option := zap.Fields(zap.String("ip", util.GetLocalIP()), zap.String("app", viper.GetString("name")))
+	options = append(options, option)
+
+	// 获取日志写入类型writers
 	writers := strings.Split(cfg.Writers, "',")
+
+	allLevel := zap.LevelEnablerFunc(func(level zapcore.Level) bool {
+		return level <= zapcore.FatalLevel
+	})
+
 	for _, w := range writers {
-		if w == "stdout" {
+		// 标准输出
+		if w == WriterStdout {
 			core := zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel)
 			cores = append(cores, core)
 		}
-		if w == "file" {
+		// 写入文件
+		if w == WriterFile {
 			// 注意：如果多个文件，最后一个会是全的，前两个可能会丢日志
 			infoFilename := cfg.LoggerFile
 			infoWrite := getLogWriterWithTime(infoFilename)
@@ -52,24 +78,34 @@ func NewZapLogger(cfg *Config) (Logger, error) {
 			core = zapcore.NewCore(encoder, zapcore.AddSync(errorWrite), errorLevel)
 			cores = append(cores, core)
 		}
+		if w != WriterFile && w != WriterStdout {
+			core := zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel)
+			cores = append(cores, core)
+			allWriter := getLogWriterWithTime(cfg.LoggerFile)
+			core = zapcore.NewCore(encoder, zapcore.AddSync(allWriter), allLevel)
+			cores = append(cores, core)
+		}
 	}
+
 	combinedCore := zapcore.NewTee(cores...)
 
+	// 开启开发模式，堆栈跟踪
 	caller := zap.AddCaller()
+	options = append(options, caller)
+	// 开启文件和行号
 	development := zap.Development()
-	field := zap.Fields()
-	logger := zap.New(
-		combinedCore,
-		zap.AddCallerSkip(2),
-		caller,
-		development,
-		field,
-	).Sugar()
+	options = append(options, development)
 
+	// 跳过文件调用层数
+	addCallerSkip := zap.AddCallerSkip(2)
+	options = append(options, addCallerSkip)
+
+	// 构造新的logger
+	logger := zap.New(combinedCore, options...).Sugar()
 	return &zapLogger{sugaredLogger: logger}, nil
 }
 
-// getJSONEncoder
+// getJSONEncoder return new JSONEncoder
 func getJSONEncoder() zapcore.Encoder {
 	encoderConfig := zapcore.EncoderConfig{
 		MessageKey:     "msg",
@@ -81,7 +117,7 @@ func getJSONEncoder() zapcore.Encoder {
 		StacktraceKey:  "stacktrace",
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 		EncodeLevel:    zapcore.LowercaseLevelEncoder,
-		EncodeDuration: zapcore.MillisDurationEncoder,
+		// EncodeDuration: zapcore.MillisDurationEncoder,
 	}
 	return zapcore.NewJSONEncoder(encoderConfig)
 }
@@ -121,7 +157,7 @@ func (l *zapLogger) Warn(args ...interface{}) {
 func (l *zapLogger) Error(args ...interface{}) {
 	l.sugaredLogger.Error(args...)
 }
-
+// Fatal logger
 func (l *zapLogger) Fatal(args ...interface{}) {
 	l.sugaredLogger.Fatal(args...)
 }

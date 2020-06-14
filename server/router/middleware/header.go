@@ -2,25 +2,9 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/shiniao/gtodo/errno"
-	"github.com/shiniao/gtodo/handler"
-	"github.com/shiniao/gtodo/token"
 	"net/http"
 	"time"
 )
-
-func AuthMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		// Parse the json web token.
-		if err := token.ParseRequest(c); err != nil {
-			handler.SendResponse(c, errno.ErrTokenInvalid, nil)
-			c.Abort()
-			return
-		}
-
-		c.Next()
-	}
-}
 
 // * 不使用cache
 func NoCache(c *gin.Context) {

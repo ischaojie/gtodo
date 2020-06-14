@@ -2,10 +2,6 @@ package log
 
 import (
 	"errors"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	"os"
-	"strings"
 )
 
 // log：全局 log 变量
@@ -42,11 +38,11 @@ type Logger interface {
 
 // Config 代表 log 的配置
 type Config struct {
-	Writers         string `yaml:"writers"`
-	LoggerLevel     string `yaml:"logger_level"`
-	LoggerFile      string `yaml:"logger_file"`
-	LoggerWarnFile  string `yaml:"logger_warn_file"`
-	LoggerErrorFile string `yaml:"logger_error_file"`
+	Writers         string `yaml:"writers"` // 日志写入类型
+	LoggerLevel     string `yaml:"logger_level"` // Logger 等级
+	LoggerFile      string `yaml:"logger_file"` // Logger写入文件位置
+	LoggerWarnFile  string `yaml:"logger_warn_file"`  // Warn 写入文件位置
+	LoggerErrorFile string `yaml:"logger_error_file"` // Error写入文件位置
 	LogFormatText   bool   `yaml:"log_format_text"`
 	RollingPolicy   string `yaml:"rollingPolicy"`
 	LogRotateDate   int    `yaml:"log_rotate_date"`
@@ -54,8 +50,11 @@ type Config struct {
 	LogBackupCount  int    `yaml:"log_backup_count"`
 }
 
-func NewLogger(cfg *Config, ins int) error {
-	switch ins {
+// NewLogger 返回新的logger实例
+func NewLogger(cfg *Config, loggerInstance int) error {
+	// 可扩展
+	switch loggerInstance {
+	// 如果是zap logger
 	case InstanceZapLogger:
 		logger, err := NewZapLogger(cfg)
 		if err != nil {

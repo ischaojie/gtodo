@@ -17,15 +17,16 @@ type UserModel struct {
 	Sex       int       `gorm:"column:sex" json:"sex"`
 	CreatedAt time.Time `gorm:"column:created_at" json:"-"`
 	UpdatedAt time.Time `gorm:"column:updated_at" json:"-"`
+	TodoID    uint64    `gorm:"column:todo_id" json:"todo_id"`
 }
 
-// Validate the fields.
+// Validate 验证字段合法性
 func (u *UserModel) Validate() error {
 	validate := validator.New()
 	return validate.Struct(u)
 }
 
-// UserInfo 对外暴露的结构体
+// UserInfo 代表对外暴露的用户信息
 type UserInfo struct {
 	ID       uint64 `json:"id" example:"1"`
 	Username string `json:"username" example:"张三"`

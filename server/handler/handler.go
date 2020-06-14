@@ -2,8 +2,8 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/shiniao/gtodo/errno"
-	"github.com/shiniao/gtodo/token"
+	"github.com/shiniao/gtodo/pkg/errno"
+	"github.com/shiniao/gtodo/pkg/token"
 	"github.com/spf13/viper"
 	"net/http"
 )
@@ -30,7 +30,7 @@ type Key struct {
 	Key string `json:"key"`
 }
 
-// RouteNotFound returns 路由不存在
+// RouteNotFound 返回路由不存在
 func RouteNotFound(c *gin.Context) {
 	c.String(http.StatusNotFound, "the route not found")
 }
@@ -54,3 +54,4 @@ func Token(c *gin.Context) {
 
 	SendResponse(c, nil, token.Token{Token: t})
 }
+
