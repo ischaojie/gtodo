@@ -39,7 +39,7 @@ func (db *Database) Close() {
 }
 
 // getDB 返回默认的数据库实例
-func getDB() *gorm.DB {
+func GetDB() *gorm.DB {
 	return DB.Default
 }
 

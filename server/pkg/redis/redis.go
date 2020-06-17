@@ -12,6 +12,9 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Nil redis 返回为空
+const Nil = redis.Nil
+
 var Client *redis.Client
 
 // Init 初始化Redis客户端
@@ -20,7 +23,7 @@ func Init() {
 		Addr:     viper.GetString("redis.addr"),
 		Password: viper.GetString("redis.password"),
 		DB:       viper.GetInt("redis.db"),
-		PoolSize: viper.GetInt("redis.pool_size"),
+		PoolSize: viper.GetInt("redis.pool_size"), // 连接池大小
 	})
 	fmt.Println("redis addr:", viper.GetString("redis.addr"))
 	_, err := Client.Ping().Result()

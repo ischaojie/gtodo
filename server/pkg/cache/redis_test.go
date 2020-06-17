@@ -10,8 +10,10 @@ import (
 func TestRedisCacheGetSet(t *testing.T) {
 	redis.InitTestRedis()
 
-	redisclient := redis.Client
-	cache := NewRedisCache(redisclient, "unit-test", JSONEncoding{})
+	// redisclient := redis.Client
+	cache := NewRedisCache(redis.Client, "unit-test", JSONEncoding{}, func() interface{} {
+		return new(int64)
+	})
 
 	// test set
 

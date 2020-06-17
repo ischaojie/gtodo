@@ -39,11 +39,6 @@ func (u *UserModel) TableName() string {
 	return "users"
 }
 
-// Token: JWT
-type Token struct {
-	Token string `json:"token"`
-}
-
 // Compare 比较加密前后密码是否一致
 func (u *UserModel) Compare(pwd string) (err error) {
 	err = auth.Compare(u.Password, pwd)

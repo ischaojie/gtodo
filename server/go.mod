@@ -15,6 +15,7 @@ require (
 	github.com/go-playground/validator/v10 v10.2.0
 	github.com/go-redis/redis v6.15.8+incompatible
 	github.com/gomodule/redigo v1.8.2 // indirect
+	github.com/google/uuid v1.1.1
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
 	github.com/jinzhu/gorm v1.9.12
 	github.com/lestrrat-go/file-rotatelogs v2.3.0+incompatible

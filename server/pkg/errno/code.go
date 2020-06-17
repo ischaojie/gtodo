@@ -16,6 +16,9 @@ var (
 	ErrTwicePasswordNotMatch = &Errno{Code: 20002, Message: "The twice password not match."}
 	ErrDatabase              = &Errno{Code: 20003, Message: "Database error."}
 	ErrToken                 = &Errno{Code: 20004, Message: "Error occurred while signing the JSON web token."}
+	ErrRegister              = &Errno{Code: 20005, Message: "Register error."}
+	ErrEmailOrPassword       = &Errno{Code: 20006, Message: "Email or Password error."}
+	ErrVCode                 = &Errno{Code: 20007, Message: "验证码错误."}
 
 	// user errors
 	ErrEncrypt      = &Errno{Code: 20101, Message: "Error occurred while encrypting the user password."}

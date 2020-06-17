@@ -5,19 +5,12 @@ import (
 	"github.com/shiniao/gtodo/internal/model"
 	"github.com/shiniao/gtodo/pkg/cache"
 	"github.com/shiniao/gtodo/pkg/redis"
-	"time"
 )
 
 const (
 	// PrefixUserCacheKey cache前缀
 	PrefixUserCacheKey = "user:cache:%d"
-	// DefaultExpireTime 默认过期时间
-	DefaultExpireTime = time.Hour * 24
 )
-
-type Cache struct {
-	cache cache.Driver
-}
 
 // NewUserCache 选择不同的cache端初始化user cache
 func NewUserCache() *Cache {
@@ -50,6 +43,21 @@ func (c *Cache) GetUserCache(userID uint64) (userModel *model.UserModel, err err
 		return userModel, err
 	}
 	return userModel, nil
+}
+
+func (c *Cache) MultiGetUserCache(userIDs []uint64) (map[string]*model.UserModel, error) {
+	var keys []string
+	for _, uid := range userIDs {
+		cacheKey := fmt.Sprintf(PrefixUserCacheKey, uid)
+		keys = append(keys, cacheKey)
+	}
+
+	userMap := make(map[string]*model.UserModel)
+	err := c.cache.MultiGet(keys, userMap)
+	if err != nil {
+		return nil, err
+	}
+	return userMap, nil
 }
 
 // DelUserCache 删除用户缓存

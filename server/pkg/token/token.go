@@ -13,71 +13,82 @@ type Token struct {
 	Token string `json:"token"`
 }
 
+type Context struct {
+	UserID   uint64
+	UserName string
+}
+
 var ErrMissingHeader = errors.New("The length of the `Authorization` header is zero.")
 
+// Sign 下发token
+func Sign(c *gin.Context, c Context, secret string) (tokenString string, err error) {
 
-// * 下发token
-func Sign(ctx *gin.Context, key, secret string) (tokenString string, err error) {
-
-	// * 读取config
+	// 从 config 读取secret
 	if secret == "" {
 		secret = viper.GetString("jwt_secret")
 	}
-	// * jwt claims
-	// TODO 过期时间处理
+	// jwt claims
+	// iss: （Issuer）签发者
+	// iat: （Issued At）签发时间，用Unix时间戳表示
+	// exp: （Expiration Time）过期时间，用Unix时间戳表示
+	// aud: （Audience）接收该JWT的一方
+	// sub: （Subject）该JWT的主题
+	// nbf: （Not Before）不要早于这个时间
+	// jti: （JWT ID）用于标识JWT的唯一ID
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		// * 用户申请token携带的key
-		"key": key,
-		// * 生效时间
-		"nbf":      time.Now().Unix(),
-		// * 签发时间
-		"iat":      time.Now().Unix(),
-		// * 过期时间
-		//"exp":      time.Now().Add(time.Hour * 2).Unix(),
+		"nbf": time.Now().Unix(),
+		"iat": time.Now().Unix(),
+		// 过期时间
+		// "exp":      time.Now().Add(time.Hour * 2).Unix(),
+		"uid":   c.userID,
+		"uname": c.userName,
 	})
-	// * Sign the token with the specified secret.
+	// Sign the token with the specified secret.
 	tokenString, err = token.SignedString([]byte(secret))
 
 	return
 }
 
+// Parse 判断token合法性，并返回token中的用户信息
+func Parse(token, secret string) (*Context, error) {
+	ctx := &Context{}
 
-func ParseRequest(c *gin.Context) error {
+	// parse the token
+	t, err := jwt.Parse(token, secretFunc(secret))
+	if err != nil {
+		return ctx, err
+
+		// Read the token if it's valid.
+	} else if claims, ok := t.Claims.(jwt.MapClaims); ok && t.Valid {
+		ctx.UserID = uint64(claims["uid"].(float64))
+		ctx.UserName = claims["uname"].(string)
+		return ctx, nil
+
+	} else {
+		return ctx, err
+	}
+}
+
+func ParseRequest(c *gin.Context) (*Context, error) {
 	header := c.Request.Header.Get("Authorization")
 
 	// * Load the jwt secret from config
 	secret := viper.GetString("jwt_secret")
 
 	if len(header) == 0 {
-		return ErrMissingHeader
+		return &Context{}, ErrMissingHeader
 	}
 
 	var t string
 	// * Parse the header to get the token part.
-	fmt.Sscanf(header, "Bearer %s", &t)
+	_, err := fmt.Sscanf(header, "Bearer %s", &t)
+	if err != nil {
+		fmt.Printf("fmt.Sscanf err,: %+v", err)
+	}
 	return Parse(t, secret)
 }
 
-
-// * 解析token
-func Parse(token, secret string) error {
-
-	// * parse the token
-	t, err := jwt.Parse(token, secretFunc(secret))
-
-	// Parse error.
-	if err != nil {
-		return err
-
-		// * Read the token if it's valid.
-	} else if _, ok := t.Claims.(jwt.MapClaims); ok && t.Valid {
-		return nil
-
-	} else {
-		return err
-	}
-}
-
+// secretFunc 验证密钥的格式
 func secretFunc(secret string) jwt.Keyfunc {
 	return func(token *jwt.Token) (interface{}, error) {
 		// * Make sure the `alg` is what we except.
